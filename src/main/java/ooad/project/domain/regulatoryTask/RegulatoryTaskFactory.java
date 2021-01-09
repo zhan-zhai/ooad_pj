@@ -11,8 +11,8 @@ import java.util.List;
  * 任务工厂，用来创建两种不用的任务
  */
 public class RegulatoryTaskFactory {
-    public ProfessorCheckTask createProfessorCheckTask(List<Market> markets, List<ProductsType> productsTypes, List<Professor> professors, Date deadLine){
-        return new ProfessorCheckTask(markets,productsTypes,professors,deadLine);
+    public ProfessorCheckTask createProfessorCheckTask(List<Market> markets, List<ProductsType> productsTypes, Professor professor, Date deadLine){
+        return new ProfessorCheckTask(markets,productsTypes,professor,deadLine);
     }
 
     public SelfCheckTask createSelfCheckTask(List<Market> markets, List<ProductsType> productsTypes, Date deadLine){

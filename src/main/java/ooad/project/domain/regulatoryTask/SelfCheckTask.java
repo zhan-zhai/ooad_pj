@@ -12,16 +12,6 @@ import java.util.Map;
  */
 public class SelfCheckTask extends RegulatoryTask{
 
-    private Map<Market,SpotCheckTask> spotCheckTaskMap;
-
-    public Map<Market, SpotCheckTask> getSpotCheckTaskMap() {
-        return spotCheckTaskMap;
-    }
-
-    public void setSpotCheckTaskMap(Map<Market, SpotCheckTask> spotCheckTaskMap) {
-        this.spotCheckTaskMap = spotCheckTaskMap;
-    }
-
     public SelfCheckTask() {
     }
 

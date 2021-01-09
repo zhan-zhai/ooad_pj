@@ -8,9 +8,6 @@ import java.util.List;
 public class ScoreInfo {
     private int totalScore;
     private List<History<Integer,String>> scoreHistory;
-//    private int score;
-//    private String reason;
-
 
     public int getTotalScore() {
         return totalScore;

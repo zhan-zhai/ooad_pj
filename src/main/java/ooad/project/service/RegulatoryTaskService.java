@@ -1,6 +1,7 @@
 package ooad.project.service;
 
 import ooad.project.domain.Market;
+import ooad.project.domain.ProductsType;
 import ooad.project.domain.Professor;
 import ooad.project.domain.regulatoryTask.*;
 import ooad.project.service.evaluationDecorator.*;
@@ -17,12 +18,12 @@ import java.util.*;
 
 public class RegulatoryTaskService {
 
-    private int getTimout(Date checkTime,Date currentTime){
+    private int getTimout(Date deadLine,Date currentTime){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         long startDateTime = 0;
         long endDateTime = 0;
         try {
-            startDateTime = dateFormat.parse(dateFormat.format(checkTime)).getTime();
+            startDateTime = dateFormat.parse(dateFormat.format(deadLine)).getTime();
             endDateTime = dateFormat.parse(dateFormat.format(currentTime)).getTime();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -50,16 +51,16 @@ public class RegulatoryTaskService {
      * @return
      */
     public History<Integer, String> evaluateSpotCheckTask(SpotCheckTask spotCheckTask, Date currentTime){
-        Date checkTime = spotCheckTask.getCheckTime();
-        int timeout = spotCheckTask.isFinished()?0:getTimout(checkTime,currentTime);
+        Date deadLine = spotCheckTask.getDeadLine();
+        int timeout = spotCheckTask.isFinished()?0:getTimout(deadLine,currentTime);
         return getEvaluation(timeout);
     }
 
-//    public int evaluateProfessorCheckTask(ProfessorCheckTask professorCheckTask,Date currentTime){
-//        Date checkTime = professorCheckTask.getCheckTime();
-//        int timeout = professorCheckTask.isFinished()?0:getTimout(checkTime,currentTime);
-//        return getEvaluation(timeout);
-//    }
+    public History<Integer, String> evaluateProfessorCheckTask(ProfessorCheckTask professorCheckTask, Date currentTime){
+        Date deadLine = professorCheckTask.getDeadLine();
+        int timeout = professorCheckTask.isFinished()?0:getTimout(deadLine,currentTime);
+        return getEvaluation(timeout);
+    }
 
     /**
      * 对所有市场的自检任务进行评估，生成市场和对应得分信息的记录
@@ -70,10 +71,11 @@ public class RegulatoryTaskService {
     public Map<Market, ScoreInfo> evaluateMarkets(List<SelfCheckTask> selfCheckTasks, Date currentTime){
         Map<Market,ScoreInfo> marketsScoreInfo = new HashMap<>();
         for (SelfCheckTask selfCheckTask:selfCheckTasks) {
-            Map<Market,SpotCheckTask> spotCheckTaskMap = selfCheckTask.getSpotCheckTaskMap();
+            Map<Market,SpotCheckTask> spotCheckTaskMap = selfCheckTask.getSpotCheckTasks();
             for (Map.Entry<Market,SpotCheckTask> entry:spotCheckTaskMap.entrySet()) {
+                if (getTimout(entry.getValue().getDeadLine(),currentTime) < 0)
+                    continue;
                 if (marketsScoreInfo.containsKey(entry.getKey())){
-
                     History<Integer,String> scoreRecord = evaluateSpotCheckTask(entry.getValue(),currentTime);
                     int totalScore = marketsScoreInfo.get(entry.getKey()).getTotalScore() + scoreRecord.getFirst();
 
@@ -83,7 +85,6 @@ public class RegulatoryTaskService {
 
                     marketsScoreInfo.put(entry.getKey(),scoreInfo);
                 }
-
                 else {
                     ScoreInfo scoreInfo = new ScoreInfo();
                     History<Integer,String> scoreRecord = evaluateSpotCheckTask(entry.getValue(),currentTime);
@@ -106,33 +107,71 @@ public class RegulatoryTaskService {
     public Map<Professor,ScoreInfo> evaluateProfessors(List<ProfessorCheckTask> professorCheckTasks, Date currentTime){
         Map<Professor,ScoreInfo> professorsScoreInfo = new HashMap<>();
         for (ProfessorCheckTask professorCheckTask: professorCheckTasks) {
-            Map<Professor,SpotCheckTask> spotCheckTaskMap = professorCheckTask.getSpotCheckTaskMap();
-            for (Map.Entry<Professor,SpotCheckTask> entry:spotCheckTaskMap.entrySet()) {
-                if (professorsScoreInfo.containsKey(entry.getKey())){
+            Professor professor = professorCheckTask.getProfessor();
+            if (getTimout(professorCheckTask.getDeadLine(),currentTime) < 0)
+                    continue;
 
-                    History<Integer,String> scoreRecord = evaluateSpotCheckTask(entry.getValue(),currentTime);
-                    int totalScore = professorsScoreInfo.get(entry.getKey()).getTotalScore() + scoreRecord.getFirst();
+            if (professorsScoreInfo.containsKey(professor)){
+                History<Integer,String> scoreRecord = evaluateProfessorCheckTask(professorCheckTask,currentTime);
+                int totalScore = professorsScoreInfo.get(professor).getTotalScore() + scoreRecord.getFirst();
 
-                    ScoreInfo scoreInfo = professorsScoreInfo.get(entry.getKey());
-                    scoreInfo.getScoreHistory().add(scoreRecord);
-                    scoreInfo.setTotalScore(totalScore);
+                ScoreInfo scoreInfo = professorsScoreInfo.get(professor);
+                scoreInfo.getScoreHistory().add(scoreRecord);
+                scoreInfo.setTotalScore(totalScore);
 
-                    professorsScoreInfo.put(entry.getKey(),scoreInfo);
-                }
+                professorsScoreInfo.put(professor,scoreInfo);
+            }
 
-                else {
-                    ScoreInfo scoreInfo = new ScoreInfo();
-                    History<Integer,String> scoreRecord = evaluateSpotCheckTask(entry.getValue(),currentTime);
-                    scoreInfo.setTotalScore(scoreRecord.getFirst());
+            else {
+                ScoreInfo scoreInfo = new ScoreInfo();
+                History<Integer,String> scoreRecord = evaluateProfessorCheckTask(professorCheckTask,currentTime);
+                scoreInfo.setTotalScore(scoreRecord.getFirst());
 
-                    List<History<Integer,String>> scoreHistory = new ArrayList<>();
-                    scoreHistory.add(scoreRecord);
-                    scoreInfo.setScoreHistory(scoreHistory);
-                    professorsScoreInfo.put(entry.getKey(),scoreInfo);
-                }
+                List<History<Integer,String>> scoreHistory = new ArrayList<>();
+                scoreHistory.add(scoreRecord);
+                scoreInfo.setScoreHistory(scoreHistory);
+                professorsScoreInfo.put(professor,scoreInfo);
             }
         }
 
         return professorsScoreInfo;
+    }
+
+    public void finishSpotCheckTask(RegulatoryTask task, SpotCheckTask spotCheckTask, Date checkTime){
+        if (spotCheckTask.getCheckResults().size() == spotCheckTask.getProductsTypes().size()){
+            spotCheckTask.setCheckTime(checkTime);
+            spotCheckTask.setFinished(true);
+            Map<Market,SpotCheckTask> spotCheckTaskMap = task.getSpotCheckTasks();
+            boolean taskIsFinished = true;
+            for (Map.Entry<Market,SpotCheckTask> entry: spotCheckTaskMap.entrySet()) {
+                if (!entry.getValue().isFinished()){
+                    taskIsFinished = false;
+                    break;
+                }
+            }
+            if (taskIsFinished){
+                task.setFinished(true);
+                task.setCheckTime(checkTime);
+            }
+        }
+    }
+
+    public void setCheckResult(SpotCheckTask spotCheckTask, ProductsType productsType, int nonconforming, Date checkTime){
+        CheckResult checkResult = new CheckResult(spotCheckTask.getMarket(),productsType,nonconforming,checkTime);
+        spotCheckTask.getCheckResults().add(checkResult);
+    }
+
+    public Map<SpotCheckTask, List<ProductsType>> getUnfinishedTask(RegulatoryTask regulatoryTask){
+        Map<SpotCheckTask,List<ProductsType>> unfinishedTasks = new HashMap<>();
+        for (SpotCheckTask spotCheckTask:regulatoryTask.getSpotCheckTasks().values()) {
+            List<ProductsType> productsTypeList = spotCheckTask.getProductsTypes();
+            for (CheckResult checkResult:spotCheckTask.getCheckResults()) {
+                productsTypeList.remove(checkResult.getProductsType());
+            }
+            if (!productsTypeList.isEmpty()){
+                unfinishedTasks.put(spotCheckTask,productsTypeList);
+            }
+        }
+        return unfinishedTasks;
     }
 }

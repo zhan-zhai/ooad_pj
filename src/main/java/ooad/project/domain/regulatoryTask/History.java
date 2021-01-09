@@ -5,7 +5,7 @@ package ooad.project.domain.regulatoryTask;
  * @param <A>
  * @param <B>
  */
-public class History<A, B> {
+public class History<A, B> extends ScoreInfo {
 
     private final A first;
 
@@ -19,21 +19,10 @@ public class History<A, B> {
         return second;
     }
 
-//    public void setFirst(A first) {
-//        this.first = first;
-//    }
-//
-//    public void setSecond(B second) {
-//        this.second = second;
-//    }
-
     public History(A a, B b){
         first = a;
         second = b;
     }
-
-//    public History() {
-//    }
 
     public String toString(){
         return "(" + first + ", " + second + ")";

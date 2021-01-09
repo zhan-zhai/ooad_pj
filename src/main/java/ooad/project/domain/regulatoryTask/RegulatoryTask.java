@@ -6,18 +6,19 @@ import ooad.project.service.visitor.Visitor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 监管任务，可分为两个子类
  */
 public class RegulatoryTask {
-//    private Map<Market,SpotCheckTask> spotCheckTasks;
+    private Map<Market,SpotCheckTask> spotCheckTasks;
     private List<Market> markets;
     private List<ProductsType> productsTypes;
     private Date deadLine;
     private Date checkTime;
     private boolean isFinished = false;
-    private List<SpotCheckTask> spotCheckTasks;
+//    private List<SpotCheckTask> spotCheckTasks;
 
 
     public List<Market> getMarkets() {
@@ -52,22 +53,22 @@ public class RegulatoryTask {
         this.checkTime = checkTime;
     }
 
-    public List<SpotCheckTask> getSpotCheckTasks() {
-        return spotCheckTasks;
-    }
-
-    public void setSpotCheckTasks(List<SpotCheckTask> spotCheckTasks) {
-        this.spotCheckTasks = spotCheckTasks;
-    }
-
-
-//    public Map<Market, SpotCheckTask> getSpotCheckTasks() {
+//    public List<SpotCheckTask> getSpotCheckTasks() {
 //        return spotCheckTasks;
 //    }
 //
-//    public void setSpotCheckTasks(Map<Market, SpotCheckTask> spotCheckTasks) {
+//    public void setSpotCheckTasks(List<SpotCheckTask> spotCheckTasks) {
 //        this.spotCheckTasks = spotCheckTasks;
 //    }
+
+
+    public Map<Market, SpotCheckTask> getSpotCheckTasks() {
+        return spotCheckTasks;
+    }
+
+    public void setSpotCheckTasks(Map<Market, SpotCheckTask> spotCheckTasks) {
+        this.spotCheckTasks = spotCheckTasks;
+    }
 
     public boolean isFinished() {
         return isFinished;

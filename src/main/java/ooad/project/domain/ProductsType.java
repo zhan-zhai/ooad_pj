@@ -10,6 +10,7 @@ public class ProductsType implements Serializable {
     private static final long serialVersionUID = 8583126211079429855L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PRODUCTSTYPE_ID")
     private int productsTypeId;
 
@@ -19,8 +20,7 @@ public class ProductsType implements Serializable {
     public ProductsType() {
     }
 
-    public ProductsType(int productsTypeId, String productsTypeName) {
-        this.productsTypeId = productsTypeId;
+    public ProductsType(String productsTypeName) {
         this.productsTypeName = productsTypeName;
     }
 

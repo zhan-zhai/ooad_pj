@@ -42,12 +42,12 @@ public class RegulatorService {
         }
     }
 
-    private void initProfessorList(List<String> professors, List<Professor> professorList){
-        for (String professorName: professors) {
-            Professor professor = professorRepository.findProfessorByProfessorName(professorName);
-            professorList.add(professor);
-        }
-    }
+//    private void initProfessorList(List<String> professors, List<Professor> professorList){
+//        for (String professorName: professors) {
+//            Professor professor = professorRepository.findProfessorByProfessorName(professorName);
+//            professorList.add(professor);
+//        }
+//    }
 
     /**
      * 发布自检任务，指定市场，产品类别，截止时间
@@ -68,18 +68,18 @@ public class RegulatorService {
      * 发布专家任务，指定专家，市场，产品类别，截止时间
      * @param markets
      * @param productsTypes
-     * @param professors
+     * @param professorName
      * @param deadLine
      * @return
      */
-    public ProfessorCheckTask launchProfessorCheckTask(List<String> markets, List<String> productsTypes, List<String> professors, Date deadLine){
+    public ProfessorCheckTask launchProfessorCheckTask(List<String> markets, List<String> productsTypes, String professorName, Date deadLine){
         List<Market> marketList = new ArrayList<>();
         List<ProductsType> productsTypeList = new ArrayList<>();
-        List<Professor> professorList = new ArrayList<>();
+//        List<Professor> professorList = new ArrayList<>();
         initMarketList(markets,marketList);
         initProductsTypeList(productsTypes,productsTypeList);
-        initProfessorList(professors,professorList);
-
-        return new RegulatoryTaskFactory().createProfessorCheckTask(marketList,productsTypeList,professorList,deadLine);
+//        initProfessorList(professors,professorList);
+        Professor professor = professorRepository.findProfessorByProfessorName(professorName);
+        return new RegulatoryTaskFactory().createProfessorCheckTask(marketList,productsTypeList,professor,deadLine);
     }
 }
