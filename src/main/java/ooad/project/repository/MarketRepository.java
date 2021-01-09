@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 public interface MarketRepository extends CrudRepository<Market,Long> {
+    Market findMarketByMarketName(String marketName);
 }
