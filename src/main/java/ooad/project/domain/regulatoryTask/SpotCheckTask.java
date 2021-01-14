@@ -74,4 +74,5 @@ public class SpotCheckTask {
         this.market = market;
         this.productsTypes = productsTypes;
     }
+
 }

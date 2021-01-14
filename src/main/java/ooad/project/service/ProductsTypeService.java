@@ -5,6 +5,7 @@ import ooad.project.domain.regulatoryTask.CheckResult;
 import ooad.project.domain.regulatoryTask.RegulatoryTask;
 import ooad.project.domain.regulatoryTask.SpotCheckTask;
 import ooad.project.repository.ProductsTypeRepository;
+import ooad.project.service.visitor.GetTotalNonconformingVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,23 +29,32 @@ public class ProductsTypeService {
         productsTypeRepository.save(productsType);
     }
 
+    /**
+     * 计算所有监管任务的某个产品类型的不合格总数
+     * @param regulatoryTasks
+     * @param startTime
+     * @param endTime
+     * @param productsType
+     * @return
+     */
     public int getTotalNonconforming(List<RegulatoryTask> regulatoryTasks, Date startTime, Date endTime,ProductsType productsType){
-        int totalNonconforming = 0;
+        GetTotalNonconformingVisitor getTotalNonconformingVisitor = new GetTotalNonconformingVisitor(productsType,startTime,endTime,0);
 
         for (RegulatoryTask regulatoryTask: regulatoryTasks) {
-            for (SpotCheckTask spotCheckTask:regulatoryTask.getSpotCheckTasks().values()) {
-                for (CheckResult checkResult:spotCheckTask.getCheckResults()){
-                    if (checkResult.getProductsType() == productsType && betweenTheTime(startTime,endTime,checkResult.getCheckTime())){
-                        totalNonconforming += checkResult.getNonconforming();
-                    }
-                }
-            }
+//            for (SpotCheckTask spotCheckTask:regulatoryTask.getSpotCheckTasks().values()) {
+//                for (CheckResult checkResult:spotCheckTask.getCheckResults()){
+//                    if (checkResult.getProductsType() == productsType && betweenTheTime(startTime,endTime,checkResult.getCheckTime())){
+//                        getTotalNonconformingVisitor.getTotalNonconforming() += checkResult.getNonconforming();
+//                    }
+//                }
+//            }
+            regulatoryTask.accept(getTotalNonconformingVisitor);
         }
 
-        return totalNonconforming;
+        return getTotalNonconformingVisitor.getTotalNonconforming();
     }
 
-    private boolean betweenTheTime(Date startTime, Date endTime, Date checkTime){
-        return checkTime.after(startTime) && checkTime.before(endTime);
-    }
+//    private boolean betweenTheTime(Date startTime, Date endTime, Date checkTime){
+//        return checkTime.after(startTime) && checkTime.before(endTime);
+//    }
 }

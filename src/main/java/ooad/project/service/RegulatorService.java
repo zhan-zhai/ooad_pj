@@ -42,12 +42,6 @@ public class RegulatorService {
         }
     }
 
-//    private void initProfessorList(List<String> professors, List<Professor> professorList){
-//        for (String professorName: professors) {
-//            Professor professor = professorRepository.findProfessorByProfessorName(professorName);
-//            professorList.add(professor);
-//        }
-//    }
 
     /**
      * 发布自检任务，指定市场，产品类别，截止时间
@@ -75,10 +69,8 @@ public class RegulatorService {
     public ProfessorCheckTask launchProfessorCheckTask(List<String> markets, List<String> productsTypes, String professorName, Date deadLine){
         List<Market> marketList = new ArrayList<>();
         List<ProductsType> productsTypeList = new ArrayList<>();
-//        List<Professor> professorList = new ArrayList<>();
         initMarketList(markets,marketList);
         initProductsTypeList(productsTypes,productsTypeList);
-//        initProfessorList(professors,professorList);
         Professor professor = professorRepository.findProfessorByProfessorName(professorName);
         return new RegulatoryTaskFactory().createProfessorCheckTask(marketList,productsTypeList,professor,deadLine);
     }

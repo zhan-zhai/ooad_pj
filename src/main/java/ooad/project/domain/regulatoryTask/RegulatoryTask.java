@@ -18,7 +18,6 @@ public class RegulatoryTask {
     private Date deadLine;
     private Date checkTime;
     private boolean isFinished = false;
-//    private List<SpotCheckTask> spotCheckTasks;
 
 
     public List<Market> getMarkets() {
@@ -53,15 +52,6 @@ public class RegulatoryTask {
         this.checkTime = checkTime;
     }
 
-//    public List<SpotCheckTask> getSpotCheckTasks() {
-//        return spotCheckTasks;
-//    }
-//
-//    public void setSpotCheckTasks(List<SpotCheckTask> spotCheckTasks) {
-//        this.spotCheckTasks = spotCheckTasks;
-//    }
-
-
     public Map<Market, SpotCheckTask> getSpotCheckTasks() {
         return spotCheckTasks;
     }
@@ -85,6 +75,12 @@ public class RegulatoryTask {
         this.markets = markets;
         this.productsTypes = productsTypes;
         this.deadLine = deadLine;
+    }
+
+    public void accept(Visitor visitor){
+        for (SpotCheckTask spotCheckTask: spotCheckTasks.values()){
+            visitor.visit(spotCheckTask);
+        }
     }
 
 }
