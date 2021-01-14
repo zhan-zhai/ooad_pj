@@ -1,5 +1,7 @@
 package ooad.project.domain.regulatoryTask;
 
+import java.util.Objects;
+
 /**
  * 二元祖，用来存放得分和原因的记录
  * @param <A>
@@ -28,4 +30,16 @@ public class History<A, B> extends ScoreInfo {
         return "(" + first + ", " + second + ")";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        History<?, ?> history = (History<?, ?>) o;
+        return Objects.equals(first, history.first) && Objects.equals(second, history.second);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second);
+    }
 }

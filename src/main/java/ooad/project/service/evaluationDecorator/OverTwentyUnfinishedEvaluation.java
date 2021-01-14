@@ -12,7 +12,7 @@ public class OverTwentyUnfinishedEvaluation extends EvaluationStrategy{
 
     public History<Integer,String> overTwentyUnfinishedEvaluate(){
 
-        return new History<>(-20,"超时20天未完成");
+        return new History<>(-20,"超时20天未完成-20");
     }
 
     /** @noinspection Duplicates*/
@@ -20,7 +20,7 @@ public class OverTwentyUnfinishedEvaluation extends EvaluationStrategy{
         History<Integer,String> history1 = overTwentyUnfinishedEvaluate();
         History<Integer,String> history2 = super.evaluate(timeout);
         int score = history1.getFirst() + history2.getFirst();
-        String reason = history2.getSecond().equals("") ?history1.getSecond():String.join(",",history1.getSecond(), history2.getSecond());
+        String reason = history2.getSecond().equals("") ?history1.getSecond():String.join(";",history2.getSecond(), history1.getSecond());
         return new History<Integer, String>(score,reason);
     }
 }

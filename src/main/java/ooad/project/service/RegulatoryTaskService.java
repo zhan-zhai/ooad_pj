@@ -55,7 +55,7 @@ public class RegulatoryTaskService {
      */
     public History<Integer, String> evaluateSpotCheckTask(SpotCheckTask spotCheckTask, Date currentTime){
         Date deadLine = spotCheckTask.getDeadLine();
-        int timeout = spotCheckTask.isFinished()?0:getTimout(deadLine,currentTime);
+        int timeout = spotCheckTask.isFinished()?(spotCheckTask.getCheckTime().before(deadLine)?0:getTimout(deadLine,spotCheckTask.getCheckTime())):getTimout(deadLine,currentTime);
         return getEvaluation(timeout);
     }
 
@@ -67,7 +67,7 @@ public class RegulatoryTaskService {
      */
     public History<Integer, String> evaluateProfessorCheckTask(ProfessorCheckTask professorCheckTask, Date currentTime){
         Date deadLine = professorCheckTask.getDeadLine();
-        int timeout = professorCheckTask.isFinished()?0:getTimout(deadLine,currentTime);
+        int timeout = professorCheckTask.isFinished()?(professorCheckTask.getCheckTime().before(deadLine)?0:getTimout(deadLine,professorCheckTask.getCheckTime())):getTimout(deadLine,currentTime);
         return getEvaluation(timeout);
     }
 
@@ -158,15 +158,15 @@ public class RegulatoryTaskService {
             spotCheckTask.setFinished(true);
 //            Map<Market,SpotCheckTask> spotCheckTaskMap = task.getSpotCheckTasks();
 //            boolean taskIsFinished = true;
-            FinishSpotCheckTaskVisitor finishSotCheckTaskVisitor = new FinishSpotCheckTaskVisitor(true);
-            task.accept(finishSotCheckTaskVisitor);
+            FinishSpotCheckTaskVisitor finishSpotCheckTaskVisitor = new FinishSpotCheckTaskVisitor(true);
+            task.accept(finishSpotCheckTaskVisitor);
 //            for (Map.Entry<Market,SpotCheckTask> entry: spotCheckTaskMap.entrySet()) {
 //                if (!entry.getValue().isFinished()){
 //                    taskIsFinished = false;
 //                    break;
 //                }
 //            }
-            if (finishSotCheckTaskVisitor.isTaskIsFinished()){
+            if (finishSpotCheckTaskVisitor.isTaskIsFinished()){
                 task.setFinished(true);
                 task.setCheckTime(checkTime);
             }

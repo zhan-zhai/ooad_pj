@@ -4,6 +4,7 @@ import ooad.project.domain.ProductsType;
 import ooad.project.domain.regulatoryTask.CheckResult;
 import ooad.project.domain.regulatoryTask.SpotCheckTask;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +24,17 @@ public class UnfinishedTaskVisitor extends Visitor{
 
     @Override
     public void visit(SpotCheckTask spotCheckTask) {
-        List<ProductsType> productsTypeList = spotCheckTask.getProductsTypes();
+        List<ProductsType> finishedProductsTypeList = spotCheckTask.getFinishedProductsType();
         for (CheckResult checkResult:spotCheckTask.getCheckResults()) {
-            productsTypeList.remove(checkResult.getProductsType());
+            finishedProductsTypeList.add(checkResult.getProductsType());
         }
-        if (!productsTypeList.isEmpty()){
-            unfinishedTasks.put(spotCheckTask,productsTypeList);
+        if (!(finishedProductsTypeList.size() == spotCheckTask.getProductsTypes().size())){
+            List<ProductsType> unfinishedType = new ArrayList<>();
+            for (ProductsType productsType:spotCheckTask.getProductsTypes()){
+                if (!finishedProductsTypeList.contains(productsType))
+                    unfinishedType.add(productsType);
+            }
+            unfinishedTasks.put(spotCheckTask,unfinishedType);
         }
     }
 }

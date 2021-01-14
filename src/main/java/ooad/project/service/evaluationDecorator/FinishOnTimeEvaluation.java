@@ -13,7 +13,7 @@ public class FinishOnTimeEvaluation extends EvaluationStrategy {
 
     public History<Integer,String> finishOnTimeEvaluate(){
 
-        return new History<>(10,"按时完成");
+        return new History<>(10,"按时完成+10");
     }
 
     /** @noinspection Duplicates*/
@@ -22,8 +22,8 @@ public class FinishOnTimeEvaluation extends EvaluationStrategy {
         History<Integer,String> history2 = super.evaluate(timeout);
 
         int score = history1.getFirst() + history2.getFirst();
-        String reason = history2.getSecond().equals("") ?history1.getSecond():String.join(",",history1.getSecond(), history2.getSecond());
+        String reason = history2.getSecond().equals("") ?history1.getSecond():String.join(";",history1.getSecond(), history2.getSecond());
 
-        return new History<Integer, String>(score,reason);
+        return new History<>(score,reason);
     }
 }

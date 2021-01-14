@@ -5,6 +5,7 @@ import ooad.project.domain.ProductsType;
 import ooad.project.service.visitor.Visitor;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,12 @@ public class RegulatoryTask {
         this.markets = markets;
         this.productsTypes = productsTypes;
         this.deadLine = deadLine;
+        Map<Market,SpotCheckTask> spotCheckTasks = new HashMap<>();
+        for (Market market: markets) {
+            SpotCheckTask spotCheckTask = new SpotCheckTask(market,productsTypes,deadLine);
+            spotCheckTasks.put(market,spotCheckTask);
+        }
+        this.spotCheckTasks = spotCheckTasks;
     }
 
     public void accept(Visitor visitor){

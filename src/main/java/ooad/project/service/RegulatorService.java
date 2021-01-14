@@ -50,28 +50,28 @@ public class RegulatorService {
      * @param deadLine
      * @return
      */
-    public SelfCheckTask launchSelfCheckTask(List<String> markets, List<String> productsTypes,Date deadLine){
-        List<Market> marketList = new ArrayList<>();
-        List<ProductsType> productsTypeList = new ArrayList<>();
-        initMarketList(markets,marketList);
-        initProductsTypeList(productsTypes,productsTypeList);
-        return new RegulatoryTaskFactory().createSelfCheckTask(marketList,productsTypeList,deadLine);
+    public SelfCheckTask launchSelfCheckTask(List<Market> markets, List<ProductsType> productsTypes,Date deadLine){
+//        List<Market> marketList = new ArrayList<>();
+//        List<ProductsType> productsTypeList = new ArrayList<>();
+//        initMarketList(markets,marketList);
+//        initProductsTypeList(productsTypes,productsTypeList);
+        return new RegulatoryTaskFactory().createSelfCheckTask(markets,productsTypes,deadLine);
     }
 
     /**
      * 发布专家任务，指定专家，市场，产品类别，截止时间
      * @param markets
      * @param productsTypes
-     * @param professorName
+     * @param professor
      * @param deadLine
      * @return
      */
-    public ProfessorCheckTask launchProfessorCheckTask(List<String> markets, List<String> productsTypes, String professorName, Date deadLine){
-        List<Market> marketList = new ArrayList<>();
-        List<ProductsType> productsTypeList = new ArrayList<>();
-        initMarketList(markets,marketList);
-        initProductsTypeList(productsTypes,productsTypeList);
-        Professor professor = professorRepository.findProfessorByProfessorName(professorName);
-        return new RegulatoryTaskFactory().createProfessorCheckTask(marketList,productsTypeList,professor,deadLine);
+    public ProfessorCheckTask launchProfessorCheckTask(List<Market> markets, List<ProductsType> productsTypes, Professor professor, Date deadLine){
+//        List<Market> marketList = new ArrayList<>();
+//        List<ProductsType> productsTypeList = new ArrayList<>();
+//        initMarketList(markets,marketList);
+//        initProductsTypeList(productsTypes,productsTypeList);
+//        Professor professor = professorRepository.findProfessorByProfessorName(professorName);
+        return new RegulatoryTaskFactory().createProfessorCheckTask(markets,productsTypes,professor,deadLine);
     }
 }
